@@ -24,7 +24,7 @@ y_test <- read_data('Datasets/test','y_test.txt')
 names(y_test) <- 'label_idx'
 subject_test <- read_data('Datasets/test','subject_test.txt')
 names(subject_test) <- 'subjectIdx'
-?
+
 # col bind test dataset
 test_dataset <- cbind(subject_test,x_test,y_test)
 
@@ -66,6 +66,6 @@ tidy_dataset <- aggregate(ds_with_labels[,first_measure:last_measure],by=list(su
 rm(ds_with_labels,first_measure,last_measure)
 
 #save file
-write.csv(tidy_dataset,'Datasets/tidy_dataset.csv',row.names = FALSE,col.names=TRUE)
+write.table(tidy_dataset,'Datasets/tidy_dataset.txt',sep='\t',col.names=TRUE,row.names=FALSE)
 
 tidy_dataset
