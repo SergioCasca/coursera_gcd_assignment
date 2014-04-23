@@ -24,7 +24,7 @@ y_test <- read_data('Datasets/test','y_test.txt')
 names(y_test) <- 'label_idx'
 subject_test <- read_data('Datasets/test','subject_test.txt')
 names(subject_test) <- 'subjectIdx'
-
+?
 # col bind test dataset
 test_dataset <- cbind(subject_test,x_test,y_test)
 
@@ -60,9 +60,12 @@ rm(activity_labels)
 ## 5.Creates a second, independent tidy data set with the average of each variable for each activity and each subject. 
 last_measure <- length(names(ds_with_labels)) - 1
 first_measure <- 2
-tidy_dataset <- aggregate(ds_with_labels[,first_measure:last_measure],by=list(ds_with_labels$subjectIdx,ds_with_labels$activity),mean)
+tidy_dataset <- aggregate(ds_with_labels[,first_measure:last_measure],by=list(subjectIdx=ds_with_labels$subjectIdx,activity=ds_with_labels$activity),mean)
 
 # remove variables
-rm(first_measure,last_measure)
+rm(ds_with_labels,first_measure,last_measure)
+
+#save file
+write.csv(tidy_dataset,'Datasets/tidy_dataset.csv',row.names = FALSE,col.names=TRUE)
 
 tidy_dataset
