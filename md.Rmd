@@ -1,0 +1,147 @@
+Getting and Cleaning Data, Cousera
+========================================================
+
+26/04/2014
+Sérgio Casca,
+
+# Assignment
+
+In order to read the data I've created a read function. It reads the first 30 rows to determine the dataset attribute types and afterwards reads the whole dataset with the class types already attribued.
+```{r}
+## source('Scripts/read_data.R')
+
+read_data <- function(directory,filename,...){
+    
+    filepath <- paste(directory,filename,sep="/")
+
+    temp_ds <- read.table(filepath,nrows = 30)
+    classes <- lapply(temp_ds,class)
+    
+    ds <- read.table(filepath,colClasses=classes,...)
+    
+    ds
+}
+
+```
+
+## 1. Merges the training and the test sets to create one data set.
+
+The first thing I've did was to gather the attributes descriptions. Since the data is all 'character' type, my read_data function always add a column with numeric indexes. So, I'm interested in the second column, with the descriptions. 
+The read_data function also attribues 'factor' type to the descriptions so in order to later used them as attributes names I had to cast them to character. 
+(Yes, I could have forced it during the read function)
+```{r}
+# get attributes description data
+features <-  read_data('Datasets','features.txt')
+features_names <- as.character(features[,2])
+```
+
+Then I've loaded the train datasets
+```{r}
+#load train data
+x_train <- read_data('Datasets/train','X_train.txt')
+y_train <- read_data('Datasets/train','y_train.txt')
+subject_train <- read_data('Datasets/train','subject_train.txt')
+```
+
+And I've changed the data.frames colum names by assigning the features descriptions to the x_train.txt dataset, and personal names to the activity indexes and subject indexes datasets.
+```{r}
+# Adjust column names
+names(x_train) <- features_names
+names(y_train) <- 'label_idx'
+names(subject_train) <- 'subjectIdx'
+```
+
+Finally I've binded them all to a single dataset.
+```{r}
+# col bind train dataset
+train_dataset <- cbind(subject_train,x_train,y_train)
+```
+
+Afterwards, I've done the same procedure to the test datasets.
+```{r}
+#load test data
+x_test <- read_data('Datasets/test','X_test.txt')
+y_test <- read_data('Datasets/test','y_test.txt')
+subject_test <- read_data('Datasets/test','subject_test.txt')
+
+# Adjust column names
+names(x_test) <- features_names
+names(y_test) <- 'label_idx'
+names(subject_test) <- 'subjectIdx'
+
+# col bind test dataset
+test_dataset <- cbind(subject_test,x_test,y_test)
+```
+
+
+And finally, I've binded both datasets.
+```{r}
+# create complete training and test datasets
+dataset <- rbind(train_dataset,test_dataset)
+
+# remove variables
+rm(features,features_names,x_train,y_train,subject_train,train_dataset,x_test,y_test,subject_test,test_dataset)
+```
+
+## 2.Extracts only the measurements on the mean and standard deviation for each measurement. 
+
+In this step I've just selected the column index where the 'std()' and 'mean()' were substrings of the attributes' names. After gathering the indexes, i've just subset the dataset by the gathered column indexes, the first column which was my Subject Index attribue and the last column wich was my ACtivity Index attribute.
+By choosing this, I've leaved out the 'meanFreq()' substrings.
+```{r}
+# gather indexes of desired attributes
+std_columns <- grep('std()',names(dataset))
+mean_columns <- grep('mean()',names(dataset))
+
+# subset original dataset
+ds <- dataset[,c(1,std_columns,mean_columns,length(names(dataset)))]
+
+# remove variables
+rm(dataset,std_columns,mean_columns)
+```
+
+## 3. Uses descriptive activity names to name the activities in the data set
+## 4. Appropriately labels the data set with descriptive activity names. 
+
+I've joinned steps 3 and 4 in the same piece of code.
+I've read the activity labels dataset and renamed the columns names. The activity index column I've nammed the same as the in the original dataset in order to ease the merge operation. 
+```{r}
+activity_labels <-  read_data('Datasets','activity_labels.txt')
+names(activity_labels) <- c('label_idx','activity')
+```
+
+Merged the original dataset with the activities descriptions dataset are removed the acitivy indexes column. 
+Since the merge operation was by the activity index, this attribute will be the first column on the merged dataset.
+```{r}
+# merge activity descriptive labels with corresponding index 'activityIndex'
+ds_with_labels <- merge(ds[,],activity_labels,by='label_idx')
+# let go label_idx
+ds_with_labels <- ds_with_labels[,-1]
+
+# remove variables
+rm(activity_labels)
+```
+
+## 5.Creates a second, independent tidy data set with the average of each variable for each activity and each subject. 
+
+In this step, I've just aggregate the data, by the two desired factors, Subject index and Activity, and apply the mean function to all the remaining columns (std and mean attributes).   
+```{r}
+last_measure <- length(names(ds_with_labels)) - 1
+first_measure <- 2
+
+tidy_dataset <- aggregate(ds_with_labels[,first_measure:last_measure],by=list(subjectIdx=ds_with_labels$subjectIdx,activity=ds_with_labels$activity),mean)
+
+# remove variables
+rm(ds_with_labels,first_measure,last_measure)
+```
+
+Save the data to a text file
+```{r}
+#save file
+write.table(tidy_dataset,'Datasets/tidy_dataset.txt',sep='\t',col.names=TRUE,row.names=FALSE)
+```
+
+And finally, return the dataset.
+```{r}
+# tidy_dataset
+str(tidy_dataset)
+```
