@@ -51,7 +51,7 @@ names(y_train) <- 'label_idx'
 names(subject_train) <- 'subjectIdx'
 ```
 
-Finally I've binded them all to a single dataset.
+Finally I've binded them all, by column, to a single dataset.
 ```{r}
 # col bind train dataset
 train_dataset <- cbind(subject_train,x_train,y_train)
@@ -74,7 +74,7 @@ test_dataset <- cbind(subject_test,x_test,y_test)
 ```
 
 
-And finally, I've binded both datasets.
+And finally, I've binded by row both datasets.
 ```{r}
 # create complete training and test datasets
 dataset <- rbind(train_dataset,test_dataset)
@@ -83,20 +83,39 @@ dataset <- rbind(train_dataset,test_dataset)
 rm(features,features_names,x_train,y_train,subject_train,train_dataset,x_test,y_test,subject_test,test_dataset)
 ```
 
+And the original dataset
+```{r}
+str(dataset)
+```
+
+And the last attribute is the label index
+(I've subseted the last 4 columns)
+```{r}
+# last index
+last_columns_index <- length(names(dataset))
+
+str(dataset[,(last_columns_index-4):last_columns_index])
+```
+
 ## 2.Extracts only the measurements on the mean and standard deviation for each measurement. 
 
-In this step I've just selected the column index where the 'std()' and 'mean()' were substrings of the attributes' names. After gathering the indexes, i've just subset the dataset by the gathered column indexes, the first column which was my Subject Index attribue and the last column wich was my ACtivity Index attribute.
-By choosing this, I've leaved out the 'meanFreq()' substrings.
+In this step I've just selected the column index where the 'std()' and 'mean()' were substrings of the attributes' names. After gathering the indexes, I've just subset the dataset by the gathered column indexes, the first column which was my Subject Index attribue and the last column wich was my ACtivity Index attribute.
+By choosing **fixed=TRUE** in **grep** I've leaved out the 'meanFreq()' substrings.
 ```{r}
 # gather indexes of desired attributes
-std_columns <- grep('std()',names(dataset))
-mean_columns <- grep('mean()',names(dataset))
+std_columns <- grep("std()",names(dataset),fixed=TRUE)
+mean_columns <- grep("mean()",names(dataset),fixed=TRUE)
 
 # subset original dataset
 ds <- dataset[,c(1,std_columns,mean_columns,length(names(dataset)))]
 
 # remove variables
 rm(dataset,std_columns,mean_columns)
+```
+
+And the subset dataset
+```{r}
+str(ds)
 ```
 
 ## 3. Uses descriptive activity names to name the activities in the data set
@@ -121,7 +140,12 @@ ds_with_labels <- ds_with_labels[,-1]
 rm(activity_labels)
 ```
 
-## 5.Creates a second, independent tidy data set with the average of each variable for each activity and each subject. 
+And the merged dataset
+```{r}
+str(ds_with_labels)
+```
+
+## 5. Creates a second, independent tidy data set with the average of each variable for each activity and each subject. 
 
 In this step, I've just aggregate the data, by the two desired factors, Subject index and Activity, and apply the mean function to all the remaining columns (std and mean attributes).   
 ```{r}
