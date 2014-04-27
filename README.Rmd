@@ -1,4 +1,4 @@
-Getting and Cleaning Data, Cousera
+Getting and Cleaning Data, Coursera
 ========================================================
 
 26/04/2014
