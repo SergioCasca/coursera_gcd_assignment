@@ -347,7 +347,7 @@ ds_with_labels <- merge(ds[, ], activity_labels, by = "label_idx")
 ds_with_labels <- ds_with_labels[, -1]
 
 # remove variables
-rm(activity_labels)
+rm(ds, activity_labels)
 ```
 
 

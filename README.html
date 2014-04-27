@@ -499,7 +499,7 @@ ds_with_labels &lt;- merge(ds[, ], activity_labels, by = &quot;label_idx&quot;)
 ds_with_labels &lt;- ds_with_labels[, -1]
 
 # remove variables
-rm(activity_labels)
+rm(ds, activity_labels)
 </code></pre>
 
 <p>And the merged dataset</p>
