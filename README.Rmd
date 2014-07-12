@@ -1,7 +1,7 @@
 Getting and Cleaning Data, Coursera
 ========================================================
 
-26/04/2014
+`r Sys.Date()`   
 Sérgio Casca,
 
 # Assignment
