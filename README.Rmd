@@ -1,3 +1,7 @@
+---
+title: "Readme"
+output: md_document
+---
 Getting and Cleaning Data, Coursera
 ========================================================
 
@@ -29,7 +33,7 @@ read_data <- function(directory,filename,...){
 ## 1. Merges the training and the test sets to create one data set.
 
 The first thing I've did was to gather the attributes descriptions. Since the data is all 'character' type, my read_data function always add a column with numeric indexes. So, I'm interested in the second column, with the descriptions. 
-The read_data function also attribues 'factor' type to the descriptions so in order to later used them as attributes names I had to cast them to character. 
+The read_data function also attributes 'factor' type to the descriptions so in order to later used them as attributes names I had to cast them to character. 
 (Yes, I could have forced it during the read function)
 ```{r}
 # get attributes description data
@@ -45,7 +49,7 @@ y_train <- read_data('Datasets/train','y_train.txt')
 subject_train <- read_data('Datasets/train','subject_train.txt')
 ```
 
-And I've changed the data.frames colum names by assigning the features descriptions to the x_train.txt dataset, and personal names to the activity indexes and subject indexes datasets.
+And I've changed the data.frames column names by assigning the features descriptions to the x_train.txt dataset, and personal names to the activity indexes and subject indexes datasets.
 ```{r}
 # Adjust column names
 names(x_train) <- features_names

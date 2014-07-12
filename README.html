@@ -77,7 +77,7 @@ read_data &lt;- function(directory,filename,...){
 }</code></pre>
 <div id="merges-the-training-and-the-test-sets-to-create-one-data-set." class="section level2">
 <h2>1. Merges the training and the test sets to create one data set.</h2>
-<p>The first thing I’ve did was to gather the attributes descriptions. Since the data is all ‘character’ type, my read_data function always add a column with numeric indexes. So, I’m interested in the second column, with the descriptions. The read_data function also attribues ‘factor’ type to the descriptions so in order to later used them as attributes names I had to cast them to character. (Yes, I could have forced it during the read function)</p>
+<p>The first thing I’ve did was to gather the attributes descriptions. Since the data is all ‘character’ type, my read_data function always add a column with numeric indexes. So, I’m interested in the second column, with the descriptions. The read_data function also attributes ‘factor’ type to the descriptions so in order to later used them as attributes names I had to cast them to character. (Yes, I could have forced it during the read function)</p>
 <pre class="r"><code># get attributes description data
 features &lt;-  read_data('Datasets','features.txt')
 features_names &lt;- as.character(features[,2])</code></pre>
@@ -86,7 +86,7 @@ features_names &lt;- as.character(features[,2])</code></pre>
 x_train &lt;- read_data('Datasets/train','X_train.txt')
 y_train &lt;- read_data('Datasets/train','y_train.txt')
 subject_train &lt;- read_data('Datasets/train','subject_train.txt')</code></pre>
-<p>And I’ve changed the data.frames colum names by assigning the features descriptions to the x_train.txt dataset, and personal names to the activity indexes and subject indexes datasets.</p>
+<p>And I’ve changed the data.frames column names by assigning the features descriptions to the x_train.txt dataset, and personal names to the activity indexes and subject indexes datasets.</p>
 <pre class="r"><code># Adjust column names
 names(x_train) &lt;- features_names
 names(y_train) &lt;- 'label_idx'

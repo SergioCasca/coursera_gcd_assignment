@@ -1,6 +1,6 @@
 ---
 title: "CodeBook"
-output: html_document
+output: md_document
 ---
 `r Sys.Date()`   
 `r paste('R',Sys.info()['version'],Sys.info()['sysname'],Sys.info()['machine'],sep=' ')`
