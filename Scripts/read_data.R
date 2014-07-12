@@ -7,5 +7,5 @@ read_data <- function(directory,filename,...){
     
     ds <- read.table(filepath,colClasses=classes,...)
     
-    ds
+    invisible(ds)
 }

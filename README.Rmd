@@ -8,7 +8,9 @@ Sérgio Casca,
 
 In order to read the data I've created a read function. It reads the first 30 rows to determine the dataset attribute types and afterwards reads the whole dataset with the class types already attribued.
 ```{r}
-## source('Scripts/read_data.R')
+source('Scripts/read_data.R')
+library(pander)
+library(plyr)
 
 read_data <- function(directory,filename,...){
     
@@ -119,9 +121,7 @@ str(ds)
 ```
 
 ## 3. Uses descriptive activity names to name the activities in the data set
-## 4. Appropriately labels the data set with descriptive activity names. 
 
-I've joinned steps 3 and 4 in the same piece of code.
 I've read the activity labels dataset and renamed the columns names. The activity index column I've nammed the same as the in the original dataset in order to ease the merge operation. 
 ```{r}
 activity_labels <-  read_data('Datasets','activity_labels.txt')
@@ -140,22 +140,34 @@ ds_with_labels <- ds_with_labels[,-1]
 rm(ds,activity_labels)
 ```
 
-And the merged dataset
+resulting in 
 ```{r}
 str(ds_with_labels)
+```
+## 4. Appropriately labels the data set with descriptive activity names.
+
+I've split this step into two.
+First to lower the case of the labels and second to remove the scores and the parenthesis from the labels.
+
+```{r}
+#lower cases
+names(ds_with_labels) <- tolower(names(ds_with_labels))
+
+# define appropriate labels by removing scores and parenthesis
+remove_scores_and_parenthesis <- function(x) {y <- sub('\\(\\)','',x); gsub('-','',y)}
+
+names(ds_with_labels) <- remove_scores_and_parenthesis(names(ds_with_labels))
 ```
 
 ## 5. Creates a second, independent tidy data set with the average of each variable for each activity and each subject. 
 
 In this step, I've just aggregate the data, by the two desired factors, Subject index and Activity, and apply the mean function to all the remaining columns (std and mean attributes).   
 ```{r}
-last_measure <- length(names(ds_with_labels)) - 1
-first_measure <- 2
 
-tidy_dataset <- aggregate(ds_with_labels[,first_measure:last_measure],by=list(subjectIdx=ds_with_labels$subjectIdx,activity=ds_with_labels$activity),mean)
+tidy_dataset <- ddply(ds_with_labels,.(subjectidx,activity),numcolwise(mean,na.rm=TRUE))
 
 # remove variables
-rm(ds_with_labels,first_measure,last_measure)
+rm(ds_with_labels)
 ```
 
 Save the data to a text file
@@ -168,4 +180,5 @@ And finally, return the dataset.
 ```{r}
 # tidy_dataset
 str(tidy_dataset)
+
 ```

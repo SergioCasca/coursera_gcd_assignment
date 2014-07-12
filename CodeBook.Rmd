@@ -1,0 +1,33 @@
+---
+title: "CodeBook"
+output: html_document
+---
+`r Sys.Date()`   
+`r paste('R',Sys.info()['version'],Sys.info()['sysname'],Sys.info()['machine'],sep=' ')`
+
+The original dataset, "Human Activity Recognition Using Smartphones Data Set" can be obtained here <http://archive.ics.uci.edu/ml/datasets/Human+Activity+Recognition+Using+Smartphones>
+
+## Raw Data
+```{r, results='asis',echo=FALSE}
+library(xtable)
+source('Scripts/read_data.R')
+features <-  read_data('Datasets','features.txt')
+features_names <- as.data.frame(as.character(features[,2]))
+table <- features_names
+names(table) <- 'Variables'
+
+print(xtable(table), type="html")
+```
+
+## Tidy Dataset
+Only the measurements on the mean and standard deviation for each measurement were extracted.
+These are the variables in the tidy dataset.
+```{r, results='asis',echo=FALSE}
+
+tidy_dataset <- read.table('Datasets/tidy_dataset.txt',sep='\t',header=TRUE)
+table <- as.data.frame(names(tidy_dataset))
+names(table) <- 'Variables'
+
+print(xtable(table), type="html")
+```
+

@@ -36,7 +36,7 @@ test_dataset <- cbind(subject_test,x_test,y_test)
 # create complete training and test datasets
 dataset <- rbind(train_dataset,test_dataset)
 
-# remove variables
+# remove unused variables
 rm(features,features_names,x_train,y_train,subject_train,train_dataset,x_test,y_test,subject_test,test_dataset)
 
 ## 2.Extracts only the measurements on the mean and standard deviation for each measurement. 
@@ -48,11 +48,10 @@ mean_columns <- grep("mean()",names(dataset),fixed=TRUE)
 # subset original dataset
 ds <- dataset[,c(1,std_columns,mean_columns,length(names(dataset)))]
 
-# remove variables
+# remove unused variables
 rm(dataset,std_columns,mean_columns)
 
 ## 3. Uses descriptive activity names to name the activities in the data set
-## 4. Appropriately labels the data set with descriptive activity names. 
 
 activity_labels <-  read_data('Datasets','activity_labels.txt')
 names(activity_labels) <- c('label_idx','activity')
@@ -60,19 +59,26 @@ names(activity_labels) <- c('label_idx','activity')
 # merge activity descriptive labels with corresponding index 'activityIndex'
 ds_with_labels <- merge(ds[,],activity_labels,by='label_idx')
 # let go label_idx
-ds_with_labels <- ds_with_labels[,-1]
+ds_with_labels$label_idx <- NULL
 
-# remove variables
+# remove unused variables
 rm(ds,activity_labels)
+
+## 4. Appropriately labels the data set with descriptive activity names. 
+
+#lower cases
+names(ds_with_labels) <- tolower(names(ds_with_labels))
+
+# define appropriate labels
+remove_scores_and_parenthesis <- function(x) {y <- sub('\\(\\)','',x); gsub('-','',y)}
+
+names(ds_with_labels) <- remove_scores_and_parenthesis(names(ds_with_labels))
 
 ## 5. Creates a second, independent tidy data set with the average of each variable for each activity and each subject. 
 
-last_measure <- length(names(ds_with_labels)) - 1
-first_measure <- 2
+tidy_dataset <- ddply(ds_with_labels,.(subjectidx,activity),numcolwise(mean,na.rm=TRUE))
 
-tidy_dataset <- aggregate(ds_with_labels[,first_measure:last_measure],by=list(subjectIdx=ds_with_labels$subjectIdx,activity=ds_with_labels$activity),mean)
-
-# remove variables
+# remove unused variables
 rm(ds_with_labels,first_measure,last_measure)
 
 #save file
